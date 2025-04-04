@@ -10,20 +10,21 @@ class BitCoinController {
       // Собираем первонач данные
       const oneYearAgo = moment().subtract(1, "years").valueOf();
       const nowDate = moment().valueOf();
-      const max_timestamp = this.model.getMaxTimestampFromDB();
-      const isEmpty = this.model.isEmptyDB();
+      const max_timestamp = await this.model.getMaxTimestampFromDB();
+      const isEmpty = await this.model.isEmptyDB();
       // Если БД пустая - заполняем годовалыми данными
       // Если нет - удаляем старые(свыше года) и добавляем свежие
       if (isEmpty) {
         const apiData = await this.model.fetchFromAPI(oneYearAgo, nowDate);
-        await addRecentData(apiData);
+        await this.model.addRecentData(apiData);
       } else {
         await this.model.clearExtraData(oneYearAgo);
         const apiData = await this.model.fetchFromAPI(max_timestamp, nowDate);
-        await addRecentData(apiData);
+        await this.model.addRecentData(apiData.data);
       }
     } catch (error) {
       console.error("Error in controller.updateBitcoinPrices:", error);
+      throw error;
     }
   }
 

@@ -1,54 +1,49 @@
-require ('dotenv').config({path: '../.env'});
+require("dotenv").config({ path: "../.env" });
 const express = require("express");
 const { Pool } = require("pg");
-const pool = require('./config/db');
-const { getDataFromApi } = require('./api/getData.js');
-const { fillDB } = require('./models/fillDB.js')
-
-
+const {
+  BitCoinPriceController,
+} = require("./controllers/BitCoinPriceController");
+const { BitCoinPriceModel } = require("./models/BitCoinPriceModel");
+const { ApiClient } = require("./models/ApiClient");
+const { db } = require("./models/db");
 
 const app = express();
 const port = process.env.API_PORT || 3000;
-console.log(process.env.API_PORT);
-
-
 app.use(express.json);
 
+const apiClient = new ApiClient();
+const model = new BitCoinPriceModel(db, apiClient);
+const controller = new BitCoinPriceController(model);
+
 app.get("api/prices", async (req, res) => {
-  let { start, end, standartPeriod } = req.query;
-  let query,
-    params = [];
-  if (start && end) {
-    query = `SELECT timestamp, price FROM bitcoin_prices
-      WHERE timestamp BETWEEN $1 AND $2 
-      ORDER BY timestamp ASC   
-      `;
-    params = [start, end];
-  } else {
-    let intervals = {
-      day: "1 DAY",
-      week: "1 WEEK",
-      month: "1 MONTH",
-      year: "1 YEAR",
-    };
-
-    if(!standartPeriod || !intervals[standartPeriod]) {
-      return res.status(400).json('err: Invalid interval')
+  try {
+    const { start, end } = req.query;
+    if (!start || !end) {
+      return res
+        .status(400)
+        .json({ error: "Start and end dates are required" });
     }
-
-    query = `SELECT timestamp, price FROM bitcoin_prices
-      WHERE timestamp >= NOW() - INTERVAL "${intervals[standartPeriod]}"
-      ORDER BY timestamp ASC   
-      `;
+    const result = await controller.getBitcoinPrices(start, end);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
+});
 
-  const { rows } = await pool.query(query, params);
-  return res.json.rows;
+// Роут для обновления данных
+app.post("/api/update-prices", async (req, res) => {
+  try {
+    await controller.updateBitCoinPrices();
+    res.json({ success: true, message: "Prices updated successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 async function initDB() {
   try {
-    await pool.query(`
+    await db.query(`
       CREATE TABLE IF NOT EXISTS bitcoin_prices(
       id SERIAL PRIMARY KEY,
       timestamp BIGINT,    
@@ -56,16 +51,14 @@ async function initDB() {
       UNIQUE (timestamp)
       )
     `);
-    console.log('DB created');         
+    console.log('DB initialized');
+    await controller.updateBitCoinPrices();
   } catch (error) {
-    console.error(error);    
+    console.error('DB initialization error:',error);
   }
-    
 }
 
 app.listen(port, () => {
   console.log(`Server is listening ${port}`);
   initDB();
-  // getDataFromApi();
-  fillDB();
 });

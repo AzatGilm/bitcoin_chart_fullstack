@@ -14,7 +14,7 @@ class ApiClient {
 
   async get(endpoint, params= {}) {
     try {
-      const response = await this.client.get(endpoint, params)
+      const response = await this.client.get(endpoint, { params })
       return response.data;
     } catch (error) {
       console.log(`Ошибка в апиклиент: ${error}`); 

@@ -16,6 +16,7 @@ class BitCoinPriceModel {
       );
       await this.db.query("COMMIT");
       console.log(`deleted ${deletedCount}`);
+      
     } catch (error) {
       await this.db.query("ROLLBACK");
       console.log("Ошибка при очистке БД");
@@ -25,7 +26,7 @@ class BitCoinPriceModel {
 
   async addRecentData(newData) {
     try {
-      if (newData?.length === 0) {
+      if (!newData || newData.length === 0) {
         console.log("No new data to add");
         return 0;
       }
@@ -40,9 +41,11 @@ class BitCoinPriceModel {
       const flatValues = values.flat();
       const query = `INSERT INTO bitcoin_prices(timestamp, price)
           VALUES ${placeholders}
+          ON CONFLICT (timestamp) DO NOTHING
           `;
       const { rowCount } = await this.db.query(query, flatValues);
       console.log(`Добавлено ${rowCount} свежих строк`);
+      return rowCount;
     } catch (error) {
       console.error("Ошибка при обновлении данных в БД:", error);
       throw error;
@@ -86,7 +89,7 @@ class BitCoinPriceModel {
   }
 
   async isEmptyDB () {
-    const {rows:[{count}]} = await client.query(`SELECT COUNT(*) as count FROM bitcoin_prices`);
+    const {rows:[{count}]} = await db.query(`SELECT COUNT(*) as count FROM bitcoin_prices`);
     const isEmpty = parseInt(count) === 0;
     return isEmpty;
   }
