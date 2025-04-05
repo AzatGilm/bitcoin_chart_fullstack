@@ -5,10 +5,10 @@ const {
   BitCoinController,
 } = require("./controllers/BitCoinPriceController");
 const { BitCoinPriceModel } = require("./models/BitCoinPriceModel");
-const { ApiClient } = require('./models/ApiClient');
+const { ApiClient } = require('./models/ApiClient_new');
 console.log(ApiClient);
-console.log(require.resolve('./models/ApiClient'));
-console.log(require.resolve('./models/apiClient'));
+console.log(require.resolve('./models/ApiClient_new'));
+// console.log(require.resolve('./models/apiClient'));
 
 const db = require("./models/db");
 
@@ -35,15 +35,15 @@ app.get("api/prices", async (req, res) => {
   }
 });
 
-// Роут для обновления данных
-app.post("/api/update-prices", async (req, res) => {
-  try {
-    await controller.updateBitCoinPrices();
-    res.json({ success: true, message: "Prices updated successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
+// // Роут для обновления данных
+// app.post("/api/update-prices", async (req, res) => {
+//   try {
+//     await controller.updateBitCoinPrices();
+//     res.json({ success: true, message: "Prices updated successfully" });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
 
 async function initDB() {
   try {

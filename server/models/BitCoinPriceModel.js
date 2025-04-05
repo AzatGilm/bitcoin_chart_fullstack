@@ -31,14 +31,16 @@ class BitCoinPriceModel {
         return 0;
       }
 
-      const values = newData.map(({ time, priceUSD }) => [
+      const values = newData.map(({ time, priceUsd }) => [
         time,
-        parseFloat(priceUSD),
+        parseFloat(priceUsd),
       ]);
       const placeholders = values
-        .map((item, (index) => `$${index * 2 + 1}, $${index * 2 + 2}`))
+        .map((_, index) => `($${index * 2 + 1}, $${index * 2 + 2})`)
         .join(",");
       const flatValues = values.flat();
+      console.log(flatValues, 'flatvalues');
+      
       const query = `INSERT INTO bitcoin_prices(timestamp, price)
           VALUES ${placeholders}
           ON CONFLICT (timestamp) DO NOTHING
@@ -55,7 +57,7 @@ class BitCoinPriceModel {
   async fetchFromAPI(start, end, interval = "d1") {
     try {
       const response = await this.apiClient.get("assets/bitcoin/history", {
-        params: { start: start, end: end, interval: "d1" },
+        params: { start: start, end: end, interval: interval },
       });
       return response.data;
     } catch (error) {

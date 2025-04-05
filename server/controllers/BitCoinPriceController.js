@@ -24,6 +24,7 @@ class BitCoinController {
         if((nowDate - max_timestamp) >= 1000*24*60*60) {
           await this.model.clearExtraData(oneYearAgo);
           const apiData = await this.model.fetchFromAPI(max_timestamp, nowDate);
+          console.log(apiData, 'контроллер');          
           await this.model.addRecentData(apiData);
         }else {
           console.log('Nothing to add, all dates are recent');          
