@@ -1,12 +1,16 @@
 require("dotenv").config({ path: "../.env" });
+const cron = require('node-cron');
 const express = require("express");
-const { Pool } = require("pg");
 const {
-  BitCoinPriceController,
+  BitCoinController,
 } = require("./controllers/BitCoinPriceController");
 const { BitCoinPriceModel } = require("./models/BitCoinPriceModel");
-const { ApiClient } = require("./models/ApiClient");
-const { db } = require("./models/db");
+const { ApiClient } = require('./models/ApiClient');
+console.log(ApiClient);
+console.log(require.resolve('./models/ApiClient'));
+console.log(require.resolve('./models/apiClient'));
+
+const db = require("./models/db");
 
 const app = express();
 const port = process.env.API_PORT || 3000;
@@ -14,7 +18,7 @@ app.use(express.json);
 
 const apiClient = new ApiClient();
 const model = new BitCoinPriceModel(db, apiClient);
-const controller = new BitCoinPriceController(model);
+const controller = new BitCoinController(model);
 
 app.get("api/prices", async (req, res) => {
   try {
@@ -61,4 +65,17 @@ async function initDB() {
 app.listen(port, () => {
   console.log(`Server is listening ${port}`);
   initDB();
+
+  // Ежедневное обновление в 00:01
+  cron.schedule('1 0 * * *', async () => {
+    console.log('[CRON] Запуск ежедневного обновления...');
+    try {
+      await controller.updateBitCoinPrices();
+    } catch (error) {
+      console.error('CRON Ошибка:', error.message);
+    }
+  }, {
+    scheduled: true,
+    timezone: "UTC" 
+  });
 });

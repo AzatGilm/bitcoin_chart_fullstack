@@ -7,14 +7,14 @@ class ApiClient {
       baseURL: 'https://api.coincap.io/v2/',
       timeout: 5000, 
       headers: {
-        'UserAgent': 'MyApp'
+        "User-Agent": 'MyApp'
       }
     })
   }
 
-  async get(endpoint, params= {}) {
+  async get(endpoint, params) {
     try {
-      const response = await this.client.get(endpoint, { params })
+      const response = await this.client.get(endpoint, params);
       return response.data;
     } catch (error) {
       console.log(`Ошибка в апиклиент: ${error}`); 

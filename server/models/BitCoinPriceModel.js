@@ -54,8 +54,8 @@ class BitCoinPriceModel {
 
   async fetchFromAPI(start, end, interval = "d1") {
     try {
-      const response = this.apiClient.get("assets/bitcoin/history", {
-        params: { start, end, interval },
+      const response = await this.apiClient.get("assets/bitcoin/history", {
+        params: { start: start, end: end, interval: "d1" },
       });
       return response.data;
     } catch (error) {
