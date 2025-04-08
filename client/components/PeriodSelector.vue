@@ -25,13 +25,13 @@
 
 <script lang="ts">
 import { mapState, mapWritableState, mapActions } from "pinia";
-import moment from 'moment'
+import moment from "moment";
 import { useBitCoinStore } from "../stores/BitcoinStore";
 
 export default {
   name: "PeriodSelector",
   data() {
-    return {}
+    return {};
   },
   computed: {
     ...mapWritableState(useBitCoinStore, ["period"]),
@@ -59,14 +59,20 @@ export default {
   methods: {
     ...mapActions(useBitCoinStore, ["setCustomRange", "fetchData"]),
   },
+  mounted() {
+    console.log("Компонент смонтирован");
+    this.fetchData(); // Вызов вручную
+  },
   watch: {
     // При изменении периода запускаем загрузку данных
+
     period(newVal) {
-      if (newVal !== 'custom') {
-        this.fetchData()
+      console.log("Period changed from", newVal);
+      if (newVal !== "custom") {
+        this.fetchData();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

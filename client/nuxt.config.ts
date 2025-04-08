@@ -4,13 +4,5 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
-  ],
-  alias: {
-    '@': '/<rootDir>',
-    '~': '/<rootDir>',
-    '~~': '/<rootDir>',
-    '@@': '/<rootDir>',
-    'stores': '/<rootDir>/stores'
-  },
-  
+  ]
 })

@@ -69,7 +69,7 @@ class BitCoinPriceModel {
   async getPrices(start, end) {
     try {
       const { rows } = await this.db.query(
-        `SELECT timestamp, priceUSD FROM bitcoin_prices
+        `SELECT timestamp, price FROM bitcoin_prices
         WHERE timestamp BETWEEN $1 AND $2 
         `,
         [start, end]

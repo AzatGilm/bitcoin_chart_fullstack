@@ -1,5 +1,6 @@
 import axios from "axios";
 import moment, { type Moment } from "moment";
+import { defineStore } from 'pinia';
 
 interface CustomRange {
   start: number
@@ -8,7 +9,7 @@ interface CustomRange {
 
 interface BitcoinPrice {
   time: number
-  priceUsd: number
+  price: number
 }
 
 interface BitcoinState {
@@ -17,7 +18,7 @@ interface BitcoinState {
   customRange: CustomRange;
 }
 
-export const useBitCoinStore = defineStore("bitcoin", {
+export const useBitCoinStore = defineStore('bitcoin', {
   state: (): BitcoinState => ({
     prices: [],
     period: "day",
@@ -39,13 +40,16 @@ export const useBitCoinStore = defineStore("bitcoin", {
           start = moment().subtract(1, this.period).valueOf();
           end = moment().valueOf();
         }
-
-        const response = await axios.get<BitcoinPrice[]>('/api/bitcoin-history', {
+        console.log(start, end);
+        
+        const response = await axios.get<BitcoinPrice[]>('http://localhost:5000/api/prices', {
           params: { start, end }
         })
         this.prices = response.data
+        console.log(this.prices);
+        
       } catch (error) {
-        console.error(`Ошибка в fetch`);        
+        console.error('Ошибка в fetch:', error);        
       }
     },  
 

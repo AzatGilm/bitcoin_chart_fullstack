@@ -14,13 +14,15 @@ const db = require("./models/db");
 
 const app = express();
 const port = process.env.API_PORT || 3000;
-app.use(express.json);
+app.use(express.json());
+const cors = require('cors');
+app.use(cors()); 
 
 const apiClient = new ApiClient();
 const model = new BitCoinPriceModel(db, apiClient);
 const controller = new BitCoinController(model);
 
-app.get("api/prices", async (req, res) => {
+app.get("/api/prices", async (req, res) => {
   try {
     const { start, end } = req.query;
     if (!start || !end) {
@@ -28,22 +30,14 @@ app.get("api/prices", async (req, res) => {
         .status(400)
         .json({ error: "Start and end dates are required" });
     }
-    const result = await controller.getBitcoinPrices(start, end);
+    const result = await controller.getBitcoinPrices(Number(start), Number(end));
+    console.log("Результат из БД:", result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// // Роут для обновления данных
-// app.post("/api/update-prices", async (req, res) => {
-//   try {
-//     await controller.updateBitCoinPrices();
-//     res.json({ success: true, message: "Prices updated successfully" });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// });
 
 async function initDB() {
   try {
