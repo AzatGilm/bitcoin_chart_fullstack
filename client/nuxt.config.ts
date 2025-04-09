@@ -4,5 +4,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
-  ]
+  ],
+  build: {
+    transpile: ['vue3-apexcharts', 'apexcharts']
+  }
 })

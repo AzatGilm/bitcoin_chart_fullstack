@@ -2,7 +2,7 @@
   <div class="period-selector">
     <!-- Select для станд периодов -->
     <select name="" id="" v-model="period">
-      <option value="day">День</option>
+      <option value="days">День</option>
       <option value="week">Неделя</option>
       <option value="month">Месяц</option>
       <option value="year">Год</option>

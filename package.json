@@ -6,6 +6,8 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
-    "cors": "^2.8.5"
+    "apexcharts": "^4.5.0",
+    "cors": "^2.8.5",
+    "vue3-apexcharts": "^1.8.0"
   }
 }

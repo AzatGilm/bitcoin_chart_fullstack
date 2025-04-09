@@ -31,7 +31,7 @@ app.get("/api/prices", async (req, res) => {
         .json({ error: "Start and end dates are required" });
     }
     const result = await controller.getBitcoinPrices(Number(start), Number(end));
-    console.log("Результат из БД:", result);
+    // console.log("Результат из БД:", result);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
