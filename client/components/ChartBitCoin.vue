@@ -111,7 +111,7 @@ export default {
 <style scoped>
 .bitcoin-chart {
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
